@@ -13,10 +13,12 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.zerock.domain.SampleDTO;
 import org.zerock.domain.SampleDTOList;
 import org.zerock.domain.TodoDTO;
@@ -148,6 +150,23 @@ public class SampleController {
 	 * HTTP 프로토콜의 헤더를 다루는 경우로 HttpServletRequest나 httpServletResponse를
 	 * 직저 핸들링하지 않아도 작업이 가능하도록 작성되어있기 때문에 ResponseEntity를 통해 처리한다.
 	 */
+	
+	@GetMapping("/exUpload")
+	public void exUpload() {
+		log.info("/exUpload...........");
+	}
+	
+	@PostMapping("/exUploadPost")
+	//@RequestMapping(value="exUploadPost", method= {RequestMethod.POST})
+	public void exUploadPost(ArrayList<MultipartFile> files) {
+		log.info("here");
+		
+		files.forEach(file->{
+			log.info("----------------");
+			log.info("name:"+file.getOriginalFilename());
+			log.info("size:"+file.getSize());
+		});
+	}
 	
 	
 	
