@@ -70,7 +70,7 @@ public class BoardContgrollerTests {
 				.getModelMap()
 				);
 	}
-	@Test
+	//@Test
 	public void testModify() throws Exception{
 		String resultPage = mockMvc.perform(MockMvcRequestBuilders.post("/board/modify")
 				.param("bno", "1")
