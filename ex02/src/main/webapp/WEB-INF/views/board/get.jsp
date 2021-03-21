@@ -41,12 +41,15 @@
                            		 value='<c:out value="${board.writer}"/>' readonly ="readonly">
                            	</div>
                            	<button data-oper='modify' class="btn btn-success">
-                           		<a style="color:white;" href="/board/modify?bno=<c:out value="${board.bno}"/>">Modify</a></button>
+                           		<a style="color:white;" href="#"/>Modify</a></button>
+                          
                            	<button data-oper='list' class="btn btn-info">
-                           		<a style="color:white;" href="/board/list">List</a></button>
+                           		<a style="color:white;" href="#">List</a></button>
                            	
-                           	<form id='operForm' action="/board/modify" methd="get">
+                           	<form id='operForm' action="/board/modify" method="get">
                            		<input type='hidden' id='bno' name='bno' value='<c:out value="${board.bno}"/>'>
+                           		<input type='hidden' name='pageNum' value='<c:out value="${cri.pageNum}"/>'>
+                           		<input type='hidden' name='amount' value='<c:out value="${cri.amount}"/>'>
                            	</form>
                            		
                            		
@@ -58,7 +61,6 @@
                 
 <script type="text/javascript">
 $(document).ready(function(){
-	
 	var operForm = $("#operForm");
 	$("button[data-oper='modify']").on("click",function(e){
 		operForm.attr("action","/board/modify").submit();
@@ -66,8 +68,8 @@ $(document).ready(function(){
 	
 	$("button[data-oper='list']").on("click",function(e){
 		operForm.find('#bno').remove();
-		operForm.attr("action","/board/list")
-		operFrom.submit();
+		operForm.attr("action","/board/list");
+		operForm.submit();
 	});
 });
 </script>

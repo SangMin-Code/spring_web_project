@@ -35,7 +35,7 @@
                               		<c:forEach items="${list }" var ="board">
                               		<tr>
                               			<td><c:out value = "${board.bno}"/></td>
-                              			<td><a href='/board/get?bno=<c:out value="${board.bno}"/>'> 
+                              			<td><a class = 'move' href='<c:out value="${board.bno}"/>'> 
                               				<c:out value = "${board.title}"/></a></td>
                               			<td><c:out value = "${board.writer}"/></td>
                               			<td><fmt:formatDate pattern="yyyy-MM-dd" value ="${board.regdate}"/></td>
@@ -43,6 +43,27 @@
                               		</tr>
                               		</c:forEach>
                                 </table>
+								<nav aria-label="Page navigation example">
+								  <ul class="pagination justify-content-end">
+								    <c:if test="${pageMaker.prev}">
+								    <li class="page-item previous">
+								      <a class="page-link" href="${pageMaker.startPage-1}" tabindex="-1">Previous</a>
+								    </li>								    
+								    </c:if>
+								    <c:forEach var ="num" begin="${pageMaker.startPage }" end="${pageMaker.endPage }">
+								    	<li class="page-item ${pageMaker.cri.pageNum==num ? "active" :""}"><a class="page-link" href="${num}">${num}</a></li>
+								    </c:forEach>
+								    <c:if test="${pageMaker.next}">
+								    <li class="page-item next">
+								      <a class="page-link" href="${pageMaker.endPage+1 }" tabindex="-1">Next</a>
+								    </li>								    
+								    </c:if>
+								  </ul>
+								</nav>
+								
+								
+								
+								
                                 <!-- Modal -->
 							    <div class="modal fade" id="MyModal" tabindex="-1" role="dialog" aria-labelledby="MyModalLabel"
 							        aria-hidden="true">
@@ -67,6 +88,12 @@
                     </div>
                 </div>
                 <!-- /.container-fluid -->
+                <form id='actionForm' action = "/board/list" method ='get'>
+                	<input type ='hidden' name='pageNum' value='${pageMaker.cri.pageNum}'>
+                	<input type ='hidden' name='amount' value='${pageMaker.cri.amount}'>             
+                </form>
+                
+                
                 
 <script type="text/javascript">
 	$(document).ready(function(){
@@ -92,6 +119,23 @@
 		$("#regBtn").on("click",function(){
 			self.location="/board/register";
 		});
+		
+		var actionForm = $("#actionForm");
+		$(".page-item a").on("click",function(e){
+			e.preventDefault();
+			console.log($(this).attr("href"));
+			actionForm.find("input[name='pageNum']").val($(this).attr("href"));
+			actionForm.submit();
+		});
+		
+		$(".move").on("click",function(e){
+			e.preventDefault();
+			actionForm.append("<input type='hidden' name='bno' value='"+
+							$(this).attr("href")+"'>");
+			actionForm.attr("action","/board/get");
+			actionForm.submit();
+		})
+		
 	});
 	
 </script>
