@@ -69,8 +69,9 @@ public class BoardMapperTests {
 	@Test
 	public void testPaging() {
 		Criteria cri = new Criteria();
-		cri.setAmount(10);
-		cri.setPageNum(3);
+		cri.setKeyword("새로");
+		cri.setType("T");
+		//keyword없이 type만 있을때 -> 오류
 		List<BoardVO>list = mapper.getListWithPaging(cri);
 		list.forEach(board -> log.info(board));
 	}

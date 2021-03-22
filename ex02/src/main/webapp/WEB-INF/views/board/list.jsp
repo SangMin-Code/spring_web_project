@@ -43,6 +43,27 @@
                               		</tr>
                               		</c:forEach>
                                 </table>
+                                <div class='row' style="width:100%;">
+                                	<div class='col-lg-10'>
+										<form id='searchForm' action='/board/list' method='get'>
+											<select class = 'custom-select-sm' name='type'>
+												<option value="" <c:out value="${pageMaker.cri.type==null?'selected':''}"/>>--</option>
+												<option value="T"<c:out value="${pageMaker.cri.type=='T' ?'selected':''}"/> >제목</option>
+												<option value="C"<c:out value="${pageMaker.cri.type=='C'?'selected':''}"/>>내용</option>
+												<option value="W"<c:out value="${pageMaker.cri.type=='W'?'selected':''}"/>>작성자</option>
+												<option value="TC"<c:out value="${pageMaker.cri.type=='TC'?'selected':''}"/>>제목 or 내용</option>
+												<option value="TW"<c:out value="${pageMaker.cri.type=='TW'?'selected':''}"/>>제목 or 작성자</option>
+												<option value="TWC"<c:out value="${pageMaker.cri.type=='TWC'?'selected':''}"/>>제목 or 내용 or 작성자</option>
+											</select>
+											<input type='text' name='keyword' value ='<c:out value="${pageMaker.cri.keyword==null ? '': pageMaker.cri.keyword}"/>'>				
+			                				<input type ='hidden' name='pageNum' value='${pageMaker.cri.pageNum}'>
+            					    		<input type ='hidden' name='amount' value='${pageMaker.cri.amount}'>             
+											<button class='btn btn-primary'>Search</button>
+										</form>
+                                	</div>
+                                </div>
+                                
+                                
 								<nav aria-label="Page navigation example">
 								  <ul class="pagination justify-content-end">
 								    <c:if test="${pageMaker.prev}">
@@ -90,7 +111,9 @@
                 <!-- /.container-fluid -->
                 <form id='actionForm' action = "/board/list" method ='get'>
                 	<input type ='hidden' name='pageNum' value='${pageMaker.cri.pageNum}'>
-                	<input type ='hidden' name='amount' value='${pageMaker.cri.amount}'>             
+                	<input type ='hidden' name='amount' value='${pageMaker.cri.amount}'>
+                	<input type ='hidden' name='type' value='<c:out value="${pageMaker.cri.type}"/>'>
+                	<input type ='hidden' name='keyword'value='<c:out value="${pageMaker.cri.keyword}"/>'>
                 </form>
                 
                 
@@ -136,6 +159,20 @@
 			actionForm.submit();
 		})
 		
+		var searchForm = $("#searchForm");
+		$("#searchForm button").on("click",function(e){
+			if(!searchForm.find("option:selected").val()){
+				alert("검색종류를 선택하세요");
+				return false;
+			}
+			if(!searchForm.find("input[name='keyword']").val()){
+				alert("키워드를 입력하세요");
+				return false;
+			}
+			searchForm.find("input[name='pageNum']").val("1");
+			e.preventDeFault();
+			searchForm.submit();
+		})
 	});
 	
 </script>
