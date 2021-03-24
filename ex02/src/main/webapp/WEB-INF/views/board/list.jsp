@@ -52,8 +52,8 @@
 												<option value="C"<c:out value="${pageMaker.cri.type=='C'?'selected':''}"/>>내용</option>
 												<option value="W"<c:out value="${pageMaker.cri.type=='W'?'selected':''}"/>>작성자</option>
 												<option value="TC"<c:out value="${pageMaker.cri.type=='TC'?'selected':''}"/>>제목 or 내용</option>
-												<option value="TW"<c:out value="${pageMaker.cri.type=='TW'?'selected':''}"/>>제목 or 작성자</option>
-												<option value="TWC"<c:out value="${pageMaker.cri.type=='TWC'?'selected':''}"/>>제목 or 내용 or 작성자</option>
+												<option value="TW"<c:out value="${pageMaker.cri.type=='TW'?'selected':''}"/>>제목 or 작성자</option>												<option value="TWC"<c:out value="${pageMaker.cri.type=='TWC'?'selected':''}"/>>제목 or 내용 or 작성자</option> --%>
+											
 											</select>
 											<input type='text' name='keyword' value ='<c:out value="${pageMaker.cri.keyword==null ? '': pageMaker.cri.keyword}"/>'>				
 			                				<input type ='hidden' name='pageNum' value='${pageMaker.cri.pageNum}'>
