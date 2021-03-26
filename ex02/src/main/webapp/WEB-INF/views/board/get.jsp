@@ -60,9 +60,22 @@
                 </div>
                 <!-- /.container-fluid -->
                 
-                
+<script type="text/javascript" src="/resources/js/reply.js">
+</script>                
 <script type="text/javascript">
 $(document).ready(function(){
+	console.log(replyService);
+	console.log("JS TEST");
+	
+	var bnoValue = '<c:out value="${board.bno}"/>';
+	replyService.add(
+		{reply:"JS Test", replyer:"tester",bno:bnoValue}
+		,
+		function(result){
+			alert("RESULT: "+result);
+		}
+	);
+	
 	var operForm = $("#operForm");
 	$("button[data-oper='modify']").on("click",function(e){
 		operForm.attr("action","/board/modify").submit();
