@@ -53,9 +53,28 @@
                            		<input type='hidden' name='keyword' value='<c:out value="${cri.keyword}"/>'>
                            		<input type='hidden' name='type' value='<c:out value="${cri.type}"/>'>
                            	</form>
-                           		
-                           		
-						</div>                            
+						</div>  
+                    </div>
+                    <div class="card shadow mb-4">
+                    	 <div class="card-header py-2">
+                            <h6 class="m-2 font-weight-bold text-primary float-left">
+                            	<i class="fa fa-comments fa-fw"></i>
+                            Reply</h6>
+                            <button id='addReplyBtn' class="m-1 btn-sm btn-primary float-right" style="border:None;">
+                            	New Reply
+                            </button>
+                        </div>
+                        <div class="card-body">
+                        	<ul class="chat">
+                        		<li class="left clearfix" data-rno='12'>
+                        			<div class="header">
+                        				<Strong class="primary-font">user00</Strong>
+                        				<small class="float-right text-muted">2021-03-27 17:00</small>
+                        			</div>
+                        			<p>Good job!</p>
+                        		</li>
+                        	</ul>
+                        </div>
                     </div>
                 </div>
                 <!-- /.container-fluid -->
@@ -64,17 +83,69 @@
 </script>                
 <script type="text/javascript">
 $(document).ready(function(){
+	
 	console.log(replyService);
 	console.log("JS TEST");
 	
 	var bnoValue = '<c:out value="${board.bno}"/>';
-	replyService.add(
+	var replyUL = $(".chat");
+	
+		showList(1);
+	
+	function showList(page){
+		replyService.getList(
+		{bno:bnoValue, page:page||1}
+		,
+		function(list){
+			var str ="";
+			if(list == null||list.length==0){
+				replyUL.html("");
+				return;
+			}
+			for(var i =0, len=list.length||0; i<len; i++){
+				str+="<li class='left clearfix' data-rno='"+list[i].rno+"'>";
+				str+="<div><div class='header'><string class='primary-font'>"+list[i].replyer+"</string>";
+				str+="<small class='float-right text-muted'>"+replyService.displayTime(list[i].replyDate)+"</small><div>";
+				str+="<p>"+list[i].reply+"</p></div></li>";
+			}
+			replyUL.html(str);
+			
+	}); 
+	}
+	
+	/*  replyService.add(
 		{reply:"JS Test", replyer:"tester",bno:bnoValue}
 		,
 		function(result){
 			alert("RESULT: "+result);
+	});  */
+	
+	
+	
+	 /* replyService.remove(47,function(count){
+		console.log(count);
+		
+		if(count=="success"){
+			alert("REMOVE");
 		}
-	);
+	}, function(err){
+		alert('ERROR....');
+	}); */
+	
+	
+	/* replyService.update(
+			{rno:"50", bno:bnoValue,reply:"Modified Reply"}
+			,
+			function(result){
+				alert("수정 완료");
+		}, function(err){
+			alert('ERROR.....')
+		});  */
+		
+	/* replyService.get(10,function(data){
+		console.log(data);
+	}) */
+	
 	
 	var operForm = $("#operForm");
 	$("button[data-oper='modify']").on("click",function(e){
