@@ -79,6 +79,38 @@
                 </div>
                 <!-- /.container-fluid -->
                 
+				<!-- Modal -->
+				<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" role="dialog" aria-hidden="False">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="myModalLabel">Reply Modal</h5>
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+				      </div>
+				      <div class="modal-body">
+				      	<div class="form-group">
+				      		<label>Reply</label>
+				      		<input class="form-control" name='reply' value='New Reply!!!!'>
+				      	</div>
+				      	<div class="form-group">
+				      		<label>Replyer</label>
+				      		<input class="form-control" name='replyer' value='replyer'>
+				      	</div>
+				      	<div class="form-group">
+				      		<label>Reply Date</label>
+				      		<input class="form-control" name='replyDate' value=''>
+				      	</div>
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" id='modalModBtn' class="btn btn-warning">Modify</button>
+				        <button type="button" id='modalRemoveBtn' class="btn btn-danger">Remove</button>
+				        <button type="button" id='modalRegisterBtn' class="btn btn-primary">Register</button>
+				        <button type="button" id='modalCloseBtn' class="btn btn-info">Close</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+                
 <script type="text/javascript" src="/resources/js/reply.js">
 </script>                
 <script type="text/javascript">
@@ -92,6 +124,8 @@ $(document).ready(function(){
 	
 		showList(1);
 	
+		
+	//for Modal 	
 	function showList(page){
 		replyService.getList(
 		{bno:bnoValue, page:page||1}
@@ -112,6 +146,58 @@ $(document).ready(function(){
 			
 	}); 
 	}
+	
+	var modal = $("#myModal");
+	var modalInputReply = modal.find("input[name='reply']");
+	var modalInputReplyer = modal.find("input[name='replyer']");
+	var modalInputReplyDate = modal.find("input[name='replyDate']");
+	
+	var modalModBtn = $("#modalModBtn");
+	var modalRemoveBtn = $("#modalRemoveBtn");
+	var modalRegisterBtn = $("#modalRegisterBtn");
+	
+	$('#addReplyBtn').on("click",function(e){
+		modal.find("input").val("")
+		modalInputReplyDate.closest("div").hide();
+		modal.find("button[id!='modalCloseBtn']").hide();
+		modalRegisterBtn.show();
+		$("#myModal").modal("show");
+	})
+	
+	//댓글 등록 
+	modalRegisterBtn.on("click",function(e){
+		
+		var reply ={
+				reply:modalInputReply.val(),
+				replyer:modalInputReplyer.val(),
+				bno :bnoValue
+		};
+		replyService.add(reply,function(result){
+			alert(result)
+			modal.find("input").val("");
+			modal.modal("hide")
+			showList(1);
+		})
+	})
+	//각 댓글 클릭
+	$(".chat").on("click","li",function(e){
+		var rno = $(this).data("rno");
+		replyService.get(rno,function(reply){
+			
+			modalInputReply.val(reply.reply);
+			modalInputReplyer.val(reply.replyer);
+			modalInputReplyDate.val(replyService.displayTime(reply.replyDate)).attr("readonly","readonly")
+			modal.data("rno",reply.rno);
+			
+			modal.find("button[id!='modalCloseBtn']").hide();
+			modalModBtn.show();
+			modalRemoveBtn.show();
+			
+			$("#myModal").modal("show");
+		})
+	
+	})
+	
 	
 	/*  replyService.add(
 		{reply:"JS Test", replyer:"tester",bno:bnoValue}
