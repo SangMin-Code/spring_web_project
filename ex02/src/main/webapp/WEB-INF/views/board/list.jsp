@@ -64,7 +64,7 @@
                                 </div>
                                 
                                 
-								<nav aria-label="Page navigation example">
+								
 								  <ul class="pagination justify-content-end">
 								    <c:if test="${pageMaker.prev}">
 								    <li class="page-item previous">
@@ -80,7 +80,7 @@
 								    </li>								    
 								    </c:if>
 								  </ul>
-								</nav>
+								
 								
 								
 								

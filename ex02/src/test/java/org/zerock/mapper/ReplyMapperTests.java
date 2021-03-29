@@ -30,11 +30,11 @@ public class ReplyMapperTests {
 		log.info(mapper);
 	}
 	
-	//@Test
+	@Test
 	public void testCreate() {
-		IntStream.rangeClosed(1, 10).forEach(i->{
+		IntStream.rangeClosed(1, 100).forEach(i->{
 			ReplyVO vo = new ReplyVO();
-			vo.setBno(bnoArr[i%5]);
+			vo.setBno(376887L);
 			vo.setReply("댓글 테스트"+i);
 			vo.setReplyer("replyer"+i);
 			mapper.insert(vo);
@@ -69,7 +69,7 @@ public class ReplyMapperTests {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testwithPage() {
 		Criteria cri = new Criteria(1,10);
 		List<ReplyVO> replies = mapper.getListWithPaging(cri, 376805L);
