@@ -167,9 +167,9 @@ $(document).ready(function(){
             	str += "<input type = 'hidden' name = 'attachList["+i+"].uploadPath' value = '"+jobj.data("path")+"'>";
             	str += "<input type = 'hidden' name = 'attachList["+i+"].fileType' value = '"+jobj.data("type")+"'>";
 			})
-			//console.log(str)
-			formObj.append(str).submi();
-			//TODO str append 후 오류 -> append전 오류 x
+			console.log(str)
+			formObj.append(str).submit();
+
 		}
 		formObj.submit();
 	});
