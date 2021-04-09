@@ -5,10 +5,38 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 
 <%@include file ="/WEB-INF/views/includes/header.jsp" %>
+<style>
+.bigPictureWrapper{
+	position:absolute;
+	display: none;
+	justify-content: center;
+	align-items: center;
+	top: 0%;
+	width: 100%;
+	height: 100%;
+	background-color: gray;
+	z-index: 100;
+	background: rgba(255, 255, 255, 0.5);
+}
+.bigPicture{
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.bigPicture img{
+	width: 600px;
+}
+
+</style>
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
+					<div class='bigPictureWrapper'>
+						<div class="bigPicture">
 
+						</div>
+					</div>
                     <!-- Page Heading -->
                     <h1 class="h3 mb-2 text-gray-800">Board Read</h1>
                     <p class="mb-4"></p>
@@ -55,6 +83,20 @@
                            	</form>
 						</div>  
                     </div>
+					<!-- Files -->
+					<div class= "card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h7 class= "m-0 font-weight-bold text-primary">File Attach</h7>
+                        </div>
+                        <div class="card-body">
+                            <div class ="uploadResult">
+                                <ul class="list-group">
+                                    
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+					<!-- Reply -->
                     <div class="card shadow mb-4">
                     	 <div class="card-header py-2">
                             <h6 class="m-2 font-weight-bold text-primary float-left">
@@ -286,40 +328,6 @@ $(document).ready(function(){
 		
 	})
 	
-	/*  replyService.add(
-		{reply:"JS Test", replyer:"tester",bno:bnoValue}
-		,
-		function(result){
-			alert("RESULT: "+result);
-	});  */
-	
-	
-	
-	 /* replyService.remove(47,function(count){
-		console.log(count);
-		
-		if(count=="success"){
-			alert("REMOVE");
-		}
-	}, function(err){
-		alert('ERROR....');
-	}); */
-	
-	
-	/* replyService.update(
-			{rno:"50", bno:bnoValue,reply:"Modified Reply"}
-			,
-			function(result){
-				alert("수정 완료");
-		}, function(err){
-			alert('ERROR.....')
-		});  */
-		
-	/* replyService.get(10,function(data){
-		console.log(data);
-	}) */
-	
-	
 	var operForm = $("#operForm");
 	$("button[data-oper='modify']").on("click",function(e){
 		operForm.attr("action","/board/modify").submit();
@@ -330,6 +338,60 @@ $(document).ready(function(){
 		operForm.attr("action","/board/list");
 		operForm.submit();
 	});
+
+	(function(){
+		var bno = '<c:out value ="${board.bno}"/>';
+		$.getJSON("/board/getAttachList",{bno:bno},function(arr){
+			console.log(arr);
+
+			var str = "";
+
+			$(arr).each(function(i,attach){
+				if(attach.fileType){
+					var fileCallPath = encodeURIComponent(attach.uploadPath+"/s_"+attach.uuid+"_"+attach.fileName)
+					str+="<li class='list-group-item' data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+"' data-fileName='"+attach.fileName+"'"
+					str+=" data-type='"+attach.fileType+"'><div>";
+					str+= "<span>"+attach.fileName+"</span>";
+					str+="<img class='ml-2' src='/display?fileName="+fileCallPath+"'>";
+					str+="</div></li>"
+				}else{
+					str+="<li class='list-group-item' data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+"' data-fileName='"+attach.fileName+"'"
+					str+=" data-type='"+attach.fileType+"'><div>";
+					str+= "<span>"+attach.fileName+"</span>";
+					str+="<img class='ml-2' src='/resources/img/attach.png' style='width:30px; height:30px' >";
+					str+="</div></li>"
+				}
+			})//each
+			$(".uploadResult ul").html(str);
+		})
+	})();
+
+	$(".uploadResult").on("click","li",function(e){
+		console.log("view image");
+		var liObj = $(this);
+		var path = encodeURIComponent(liObj.data("path")+"/"+liObj.data("uuid")+"_"+liObj.data("filename")); //TODO data-fileName 안되는데?
+		if(liObj.data("type")){
+			showImage(path.replace(new RegExp(/\\/g),"/"));
+		}else{
+			self.location="/download?fileName="+path
+		}
+	})
+	
+	$(".bigPictureWrapper").on("click",function(e){
+		$(".bigPicture").animate({width:'0%',height:'0%'},1000);
+		setTimeout(function(){
+			$(".bigPictureWrapper").hide();
+		},1000);
+	})
+	
 });
+
+function showImage(fileCallPath){
+	alert(fileCallPath);
+	$(".bigPictureWrapper").css("display","flex").show();
+	$(".bigPicture")
+	.html("<img src='/display?fileName="+fileCallPath+"'>")
+	.animate({width:'100%',height:'100%'},1000);
+}
 </script>
 <%@include file ="/WEB-INF/views/includes/footer.jsp"%>

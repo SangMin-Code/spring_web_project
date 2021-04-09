@@ -5,8 +5,8 @@ PUBLIC "-//mybatis.org/DTD Mapper 3.0/EN"
 <mapper namespace="org.zerock.mapper.BoardAttachMapper">
 	
 	<insert id="insert">
-		insert into tbl_attach(uuid,uploadpath,filename,filetype,bno)
-		values (#{uuid},#{uploadpath},#{fileName},#{bno})
+		insert into tbl_attach(uuid,uploadPath,fileName,filetype,bno)
+		values (#{uuid},#{uploadPath},#{fileName},#{fileType},#{bno})
 	</insert>
 
 	<delete id="delete">
