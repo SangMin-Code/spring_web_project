@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri ="http://www.springframework.org/security/tags" prefix="sec" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 
 <%@include file ="/WEB-INF/views/includes/header.jsp" %>
@@ -20,7 +21,8 @@
                         </div>
                         <div class="card-body">
                             <form role ="form" action="/board/register" method="post">
-                            	<div class="form-group">
+                            	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                <div class="form-group">
                             		<label>Title</label>
                             		<input class ="form-control" name="title">
                             	</div>
@@ -30,7 +32,8 @@
                             	</div>
                             	<div class="form-group">
                             		<label>Writer</label>
-                            		<input class ="form-control" name="writer">
+                            		<input class ="form-control" name="writer"
+                                    value="<sec:authentication property='principal.username'/>" readonly="readonly">
                             	</div>
                             	<button type="submit" class="btn btn-success">
                             		Submit button
@@ -64,6 +67,8 @@
 <script>
 var regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
 var maxSize = 5242880;
+var csrfHeadName ="${_csrf.headerName}";
+var csrfTokenValue = "${_csrf.token}";
 
 function checkExtension(fileName, fileSize){
     if(fileSize>=maxSize){
@@ -86,7 +91,7 @@ function showUploadResult(uploadResultArr){
         //image type
         if(obj.image){
             var fileCallPath = encodeURIComponent(obj.uploadPath+"/s_"+obj.uuid+"_"+obj.fileName)
-            str+="<li class='list-group-item' data-path='"+obj.uploadPath+"' data-uuid='"+obj.uuid+"' data-fileName='"+obj.fileName+"'"  /* TODO fileName filename -> data filename why?  */
+            str+="<li class='list-group-item' data-path='"+obj.uploadPath+"' data-uuid='"+obj.uuid+"' data-fileName='"+obj.fileName+"'";  /* TODO fileName filename -> data filename why?  */
             str+=" data-type='"+obj.image+"'><div>";
             str+= "<span>"+obj.fileName+"</span>";
             str+="<img class='ml-2' src='/display?fileName="+fileCallPath+"'>";
@@ -130,7 +135,7 @@ $(document).ready(function(e){
         formObj.append(str).submit();
     })
 
-    $("input[type='file'").change(function(e){
+    $("input[type='file']").change(function(e){
         var formData = new FormData();
         var inputFile = $("input[name='uploadFile']");
         var files = inputFile[0].files;
@@ -145,6 +150,9 @@ $(document).ready(function(e){
 	        url:'/uploadAjaxAction',
 	        processData:false,
 	        contentType:false,
+            beforeSend: function(xhr){
+                xhr.setRequestHeader(csrfHeadName,csrfTokenValue);
+            },
 	        data:formData,
 	        type:'POST',
 	        dataType:'json',
@@ -165,6 +173,9 @@ $(document).ready(function(e){
         $.ajax({
             url:'/deleteFile',
             data:{fileName:targetFile, type:type},
+            beforeSend: function(xhr){
+                xhr.setRequestHeader(csrfHeadName,csrfTokenValue);
+            },
             dataType:'text',
             type:'POST',
             success:function(result){

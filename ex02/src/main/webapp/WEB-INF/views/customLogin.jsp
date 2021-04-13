@@ -58,8 +58,8 @@
                                         </div>
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
-                                                <input type="checkbox" class="custom-control-input" id="customCheck">
-                                                <label class="custom-control-label" for="customCheck">Remember
+                                                <input name = "remember-me"type="checkbox" class="custom-control-input" id="remember-me">
+                                                <label class="custom-control-label" for="remember-me">Remember
                                                     Me</label>
                                             </div>
                                         </div>

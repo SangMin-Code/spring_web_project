@@ -32,11 +32,14 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
+                <form id="log_form" method='post' action="/customLogout">
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <a id ="logout" class="btn btn-primary" href="index.html">Logout</a>
                 </div>
+                <input type="hidden" name="${_csrf.parameterName}" value ="${_csrf.token}"/>
+                </form>
             </div>
         </div>
     </div>
@@ -61,8 +64,15 @@
     <!--  
     <script src="/resources/js/demo/datatables-demo.js"></script>	
 	-->
-
 	<script>
+	
+	$(document).ready(function(){
+		$("#logout").on("click",function(e){
+			e.preventDefault();
+			$("#log_form").submit();
+		})
+	})
+		
 
 		/*$(document).ready(function(){
 			$('#dataTables-example').DataTable({
@@ -73,6 +83,7 @@
 				.attr("aria-expanded",'false')
 				.attr("style","height:1px");
 		})*/
+		
 
 	
 	</script>

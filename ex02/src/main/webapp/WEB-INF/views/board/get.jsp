@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri ="http://www.springframework.org/security/tags" prefix="sec" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 
 <%@include file ="/WEB-INF/views/includes/header.jsp" %>
@@ -68,9 +69,13 @@
                            		<input class ="form-control" name="writer"
                            		 value='<c:out value="${board.writer}"/>' readonly ="readonly">
                            	</div>
-                           	<button data-oper='modify' class="btn btn-success">
-                           		<a style="color:white;" href="#"/>Modify</a></button>
-                          
+                           	<sec:authentication property="principal" var="pinfo"/>
+							   <sec:authorize access="isAuthenticated()">
+								    <c:if test="${pinfo.username eq board.writer}">
+							   			<button data-oper='modify' class="btn btn-success">
+                           	   			<a style="color:white;" href="#"/>Modify</a></button>
+									</c:if>
+								</sec:authorize>
                            	<button data-oper='list' class="btn btn-info">
                            		<a style="color:white;" href="#">List</a></button>
                            	
@@ -102,10 +107,12 @@
                             <h6 class="m-2 font-weight-bold text-primary float-left">
                             	<i class="fa fa-comments fa-fw"></i>
                             Reply</h6>
+							<sec:authorize access="isAuthenticated()">
                             <button id='addReplyBtn' class="m-1 btn-sm btn-primary float-right" style="border:None;">
                             	New Reply
                             </button>
-                        </div>
+							</sec:authorize>
+						</div>
                         <div class="card-body">
                         	<ul class="chat">
                         		<li class="left clearfix" data-rno='12'>
@@ -160,6 +167,10 @@
 <script type="text/javascript" src="/resources/js/reply.js">
 </script>                
 <script type="text/javascript">
+
+var csrfHeadName ="${_csrf.headerName}";
+var csrfTokenValue = "${_csrf.token}";
+
 $(document).ready(function(){
 	
 	console.log(replyService);
@@ -167,6 +178,8 @@ $(document).ready(function(){
 	
 	var bnoValue = '<c:out value="${board.bno}"/>';
 	var replyUL = $(".chat");
+	
+
 	
 	showList(1);
 	
@@ -216,15 +229,24 @@ $(document).ready(function(){
 	var modalRemoveBtn = $("#modalRemoveBtn");
 	var modalRegisterBtn = $("#modalRegisterBtn");
 	var modalCloseBtn = $('#modalCloseBtn');
+	var replyer = null;
+	<sec:authorize access="isAuthenticated()">
+		replyer = '<sec:authentication property="principal.username"/>';
+	</sec:authorize>
 	
 	$('#addReplyBtn').on("click",function(e){
 		modal.find("input").val("")
+		modal.find("input[name='replyer']").val(replyer);
 		modalInputReplyDate.closest("div").hide();
 		modal.find("button[id!='modalCloseBtn']").hide();
 		modalRegisterBtn.show();
 		$("#myModal").modal("show");
 	})
 	
+	$(document).ajaxSend(function(e,xhr,oprtions){
+		xhr.setRequestHeader(csrfHeadName,csrfTokenValue);
+	})
+
 	modalCloseBtn.on("click",function(e){
 		modal.modal("hide");	
 	})
@@ -265,8 +287,24 @@ $(document).ready(function(){
 	//댓글 수정
 	modalModBtn.on("click",function(e){
 		
+		var originalReplyer = modalInputReplyer.val();
+
 		var reply = {rno:modal.data("rno"),
-					reply:modalInputReply.val()};
+					reply:modalInputReply.val(),
+					replyer:originalReplyer};
+
+		if(!replyer){
+			alert("로그인 후 수정이 가능합니다.");
+			modal.modal("hide");
+			return;
+		}
+		console.log("Original Replyer :"+originalReplyer);
+
+		if(replyer != originalReplyer){
+			alert("자신이 작성한 댓글만 수정이 가능합니다.");
+			modal.modal("hide");
+			return;
+		}
 		replyService.update(reply,function(result){
 			alert(result);
 			modal.modal("hide");
@@ -278,7 +316,24 @@ $(document).ready(function(){
 	modalRemoveBtn.on("click",function(e){
 		
 		var rno =modal.data("rno");
-		replyService.remove(rno,function(result){
+		console.log("RNO :"+rno + " REPLYER :"+replyer);
+		
+		if(!replyer){
+			alert("로그인 후 삭제가 가능합니다.")
+			modla.modal("hide");
+			return;
+		}
+
+		var originalReplyer = modalInputReplyer.val();
+
+		console.log("OriginalReplyer :"+originalReplyer);
+
+		if(replyer != originalReplyer){
+			alert("자신이 작성한 댓글만 삭제가 가능합니다.");
+			modal.modal("hide");
+			return;
+		}
+		replyService.remove(rno,originalReplyer,function(result){
 			alert(result);
 			modal.modal("hide");
 			showList(pageNum);

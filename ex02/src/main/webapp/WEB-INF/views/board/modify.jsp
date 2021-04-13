@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri ="http://www.springframework.org/security/tags" prefix="sec" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 
 <%@include file ="/WEB-INF/views/includes/header.jsp" %>
@@ -25,6 +26,7 @@
                         	<input type='hidden' name='amount' value='<c:out value="${cri.amount }"/>'>   
                         	<input type='hidden' name='keyword' value='<c:out value="${cri.keyword}"/>'>
                            	<input type='hidden' name='type' value='<c:out value="${cri.type}"/>'>
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                         	                     
                            	<div class="form-group">
                            		<label>Bno</label>
@@ -57,10 +59,16 @@
                            		<input class ="form-control" name="updateDate"
                            		 value='<fmt:formatDate pattern ="yyyy/MM/dd" value="${board.updateDate}"/>' readonly=readonly>
                            	</div>
-                           	<button type ="submit" data-oper='modify' class="btn btn-success">
-                           		Modify</button>
-                           	<button type="submit" data-oper='remove' class="btn btn-danger">
-                           		Remove</button>
+
+							<sec:authentication property="principal" var="pinfo"/>
+							<sec:authorize access="isAuthenticated()">
+								<c:if test="${pinfo.username eq board.writer}">
+									<button type ="submit" data-oper='modify' class="btn btn-success">
+										Modify</button>
+									<button type="submit" data-oper='remove' class="btn btn-danger">
+										Remove</button>
+								</c:if>	   
+							</sec:authorize>
                            	<button type="submit" data-oper='list' class="btn btn-info">
                            		List</button>
                            		
@@ -89,6 +97,8 @@
 
 var regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
 var maxSize = 5242880;
+var csrfHeadName ="${_csrf.headerName}";
+var csrfTokenValue = "${_csrf.token}";
 
 function checkExtension(fileName, fileSize){
     if(fileSize>=maxSize){
@@ -231,6 +241,9 @@ $(document).ready(function(){
 	        processData:false,
 	        contentType:false,
 	        data:formData,
+	        beforeSend: function(xhr){
+                xhr.setRequestHeader(csrfHeadName,csrfTokenValue);
+            },
 	        type:'POST',
 	        dataType:'json',
 	        success:function(result){
